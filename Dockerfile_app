@@ -1,0 +1,15 @@
+FROM alpine:latest
+
+RUN apk add --no-cache nginx
+
+RUN mkdir -p /var/www/html /run/nginx && \
+    echo "<h1>Application Deployed via Terraform IaC!</h1>" > /var/www/html/index.html
+
+# Replace Alpine's default config (which returns 404 everywhere)
+# with one that serves our folder
+RUN echo "server { listen 80 default_server; root /var/www/html; index index.html; }" \
+    > /etc/nginx/http.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

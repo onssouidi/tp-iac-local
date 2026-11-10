@@ -1,0 +1,14 @@
+# Terraform's downloaded plugins (re-downloaded by `terraform init`)
+.terraform/
+
+# State files: contain your infrastructure's real state AND secrets in plain text
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Local variable overrides (often contain secrets)
+*.tfvars
+*.tfvars.json

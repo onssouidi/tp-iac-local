@@ -1,0 +1,46 @@
+name: Terraform IaC Pipeline
+
+# WHEN does the pipeline run?
+on:
+  push:
+    branches: [main]      # on every push to main
+  workflow_dispatch:      # + a "Run workflow" button in GitHub (handy for testing)
+
+jobs:
+  terraform:
+    name: Terraform DLC
+    runs-on: ubuntu-latest   # temporary Linux VM, with Docker pre-installed
+
+    steps:
+      # --- Preparation ---
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # --- Init: download providers, initialize the state ---
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      # --- Quality checks (bonus) ---
+      - name: Terraform Format & Validate
+        run: |
+          terraform fmt -check
+          terraform validate
+
+      # --- Plan: validation & review (detect changes) ---
+      - name: Terraform Plan
+        run: terraform plan -input=false -out=tfplan
+
+      # --- Apply: continuous deployment ---
+      - name: Terraform Apply
+        run: terraform apply -input=false -auto-approve tfplan
+
+      # --- Proof that the deployment works ---
+      - name: Verify deployment
+        run: |
+          terraform output
+          docker ps
+          curl -s --retry 5 --retry-delay 2 --retry-connrefused http://localhost:8080 \
+            | grep "Application Deployed via Terraform IaC"

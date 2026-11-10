@@ -1,0 +1,10 @@
+# Terraform files: not needed to build the image
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+*.tf
+
+# Git
+.git/
+.github/
